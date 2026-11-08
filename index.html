@@ -85,11 +85,11 @@ header.top {
 /* ── 히어로 ── */
 .hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--rule); }
 .hero .net { position: absolute; inset: 0; pointer-events: none;
-  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 82%); mask-image: linear-gradient(180deg, #000 55%, transparent 82%); }
+  -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 86%); mask-image: linear-gradient(180deg, #000 62%, transparent 86%); }
 .hero canvas {
   position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none;
-  -webkit-mask-image: radial-gradient(ellipse 46% 52% at 50% 42%, rgba(0,0,0,.18) 0%, rgba(0,0,0,.25) 30%, #000 78%);
-          mask-image: radial-gradient(ellipse 46% 52% at 50% 42%, rgba(0,0,0,.18) 0%, rgba(0,0,0,.25) 30%, #000 78%);
+  -webkit-mask-image: radial-gradient(ellipse 44% 46% at 50% 42%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.4) 35%, #000 80%);
+          mask-image: radial-gradient(ellipse 44% 46% at 50% 42%, rgba(0,0,0,.3) 0%, rgba(0,0,0,.4) 35%, #000 80%);
 }
 .hero-inner { position: relative; text-align: center; padding-block: clamp(5rem, 12vw, 9rem) clamp(3.5rem, 7vw, 5.5rem); display: flex; flex-direction: column; align-items: center; }
 .pill {
@@ -624,48 +624,89 @@ document.getElementById("copyMail").addEventListener("click", e => {
   try { navigator.clipboard.writeText(el.textContent).then(done).catch(select); } catch (_) { select(); }
 });
 
-/* 첫 화면 배경: 천천히 움직이는 신경망 */
+/* 첫 화면 배경: 별자리처럼 천천히 움직이는 신경망 */
 (function () {
   const cv = document.getElementById("neural");
   const ctx = cv.getContext("2d");
+  const hero = cv.closest(".hero");
   const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let W = 0, H = 0, pts = [], color = "61,140,131", raf;
+  let W = 0, H = 0, stars = [], dust = [], col = "61,140,131", ink = "28,92,87", warm = "168,105,47", t = 0, raf = null, mouse = null;
 
+  const rgb = v => { const m = v.trim().match(/^#?([0-9a-f]{6})$/i); if (!m) return null; const n = parseInt(m[1], 16); return `${n >> 16},${(n >> 8) & 255},${n & 255}`; };
   function readColor() {
-    const c = getComputedStyle(document.documentElement).getPropertyValue("--accent-2").trim();
-    const m = c.match(/^#?([0-9a-f]{6})$/i);
-    if (m) { const n = parseInt(m[1], 16); color = `${n >> 16},${(n >> 8) & 255},${n & 255}`; }
+    const cs = getComputedStyle(document.documentElement);
+    col = rgb(cs.getPropertyValue("--accent-2")) || col;
+    ink = rgb(cs.getPropertyValue("--accent")) || ink;
+    warm = rgb(cs.getPropertyValue("--warm")) || warm;
   }
   function resize() {
     const r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = Math.round(Math.min(90, Math.max(28, W * H / 14000)));
     let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    pts = Array.from({ length: count }, () => ({ x: rnd() * W, y: rnd() * H, vx: (rnd() - .5) * .22, vy: (rnd() - .5) * .22, r: 2.2 + rnd() * 2.6 }));
+    const count = Math.round(Math.min(85, Math.max(30, W * H / 13000)));
+    stars = Array.from({ length: count }, (_, i) => {
+      const big = rnd() < 0.14;
+      return { x: rnd() * W, y: rnd() * H, vx: (rnd() - .5) * .18, vy: (rnd() - .5) * .18,
+               r: big ? 3.4 + rnd() * 1.8 : 1.6 + rnd() * 1.6, big, ph: rnd() * 6.283, sp: .015 + rnd() * .025,
+               warm: big && rnd() < 0.35 };
+    });
+    dust = Array.from({ length: Math.round(count * 1.6) }, () => ({ x: rnd() * W, y: rnd() * H, r: .5 + rnd() * .9, ph: rnd() * 6.283, sp: .01 + rnd() * .03 }));
+  }
+  function glow(x, y, r, c, a) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, `rgba(${c},${a})`); g.addColorStop(1, `rgba(${c},0)`);
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
   }
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    const L = 165;
-    for (let i = 0; i < pts.length; i++) {
-      const a = pts[i];
-      for (let j = i + 1; j < pts.length; j++) {
-        const b = pts[j], dx = a.x - b.x, dy = a.y - b.y, d = Math.hypot(dx, dy);
-        if (d < L) { ctx.strokeStyle = `rgba(${color},${(1 - d / L) * .62})`; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+    for (const d of dust) { const a = .25 + .25 * Math.sin(t * d.sp + d.ph); ctx.fillStyle = `rgba(${col},${a})`; ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2); ctx.fill(); }
+    const L = 175;
+    ctx.lineCap = "round";
+    for (let i = 0; i < stars.length; i++) {
+      const a = stars[i];
+      for (let j = i + 1; j < stars.length; j++) {
+        const b = stars[j], d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (d < L) {
+          const k = 1 - d / L, strong = a.big || b.big;
+          ctx.strokeStyle = `rgba(${strong ? ink : col},${(strong ? .7 : .55) * k})`;
+          ctx.lineWidth = strong ? 1.5 : 1.1;
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        }
+      }
+      if (mouse) {
+        const d = Math.hypot(a.x - mouse.x, a.y - mouse.y);
+        if (d < 200) { ctx.strokeStyle = `rgba(${ink},${.75 * (1 - d / 200)})`; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke(); }
       }
     }
-    for (const p of pts) { ctx.fillStyle = `rgba(${color},.85)`; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); }
+    for (const s of stars) {
+      const tw = .75 + .25 * Math.sin(t * s.sp + s.ph);
+      const c = s.warm ? warm : (s.big ? ink : col);
+      glow(s.x, s.y, s.r * (s.big ? 5 : 3.2), c, (s.big ? .32 : .2) * tw);
+      ctx.fillStyle = `rgba(${c},${.95 * tw})`; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+      if (s.big) {
+        const len = s.r * 3.2 * tw;
+        ctx.strokeStyle = `rgba(${c},${.55 * tw})`; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(s.x - len, s.y); ctx.lineTo(s.x + len, s.y); ctx.moveTo(s.x, s.y - len); ctx.lineTo(s.x, s.y + len); ctx.stroke();
+      }
+    }
   }
   function step() {
-    for (const p of pts) {
+    t++;
+    for (const p of stars) {
       p.x += p.vx; p.y += p.vy;
-      if (p.x < -20) p.x = W + 20; if (p.x > W + 20) p.x = -20;
-      if (p.y < -20) p.y = H + 20; if (p.y > H + 20) p.y = -20;
+      if (p.x < -30) p.x = W + 30; if (p.x > W + 30) p.x = -30;
+      if (p.y < -30) p.y = H + 30; if (p.y > H + 30) p.y = -30;
     }
     draw(); raf = requestAnimationFrame(step);
   }
-  readColor(); resize(); draw();
-  if (!still) raf = requestAnimationFrame(step);
+  const start = () => { if (!still && !raf && !document.hidden) raf = requestAnimationFrame(step); };
+  const stop = () => { if (raf) { cancelAnimationFrame(raf); raf = null; } };
+  readColor(); resize(); draw(); start();
   window.addEventListener("resize", () => { resize(); draw(); });
+  hero.addEventListener("pointermove", e => { const r = cv.getBoundingClientRect(); mouse = { x: e.clientX - r.left, y: e.clientY - r.top }; if (still) draw(); });
+  hero.addEventListener("pointerleave", () => { mouse = null; if (still) draw(); });
+  document.addEventListener("visibilitychange", () => document.hidden ? stop() : start());
+  if ("IntersectionObserver" in window) new IntersectionObserver(es => es[0].isIntersecting ? start() : stop()).observe(hero);
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { readColor(); draw(); });
   new MutationObserver(() => { readColor(); draw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 })();
