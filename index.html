@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>신경사회사업연구회</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+/* Layout: 넓은 여백의 중앙 정렬 히어로(워드마크 + 한 줄 소개 + 구성원 줄) 위로 은은한 신경망 캔버스, 이후 1120px 그리드에 헤어라인으로 나뉜 섹션.
+   전 영역 Pretendard 단일 서체. AIR Lab과 같은 뼈대에 딥 틸 포인트. */
+:root {
+  --bg:          #f7f9f8;
+  --surface:     #ffffff;
+  --tint:        #edf3f1;
+  --ink:         #13212a;
+  --body:        #3c4a52;
+  --muted:       #7a8a90;
+  --rule:        #dfe6e4;
+  --accent:      #1c5c57;
+  --accent-2:    #3d8c83;
+  --accent-soft: #d8e9e5;
+  --warm:        #a8692f;
+  --warm-soft:   #f4e9dd;
+  --nav-bg:      rgba(247,249,248,0.78);
+
+  --f-text: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+
+  --wrap: 1120px;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#0e1719; --surface:#142024; --tint:#17282b; --ink:#e8efee; --body:#b5c3c5; --muted:#7f9298;
+    --rule:#243437; --accent:#7cc3b8; --accent-2:#5aa69b; --accent-soft:#1c3735; --warm:#dba36c; --warm-soft:#3a2c1f;
+    --nav-bg: rgba(14,23,25,0.78); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#0e1719; --surface:#142024; --tint:#17282b; --ink:#e8efee; --body:#b5c3c5; --muted:#7f9298;
+  --rule:#243437; --accent:#7cc3b8; --accent-2:#5aa69b; --accent-soft:#1c3735; --warm:#dba36c; --warm-soft:#3a2c1f;
+  --nav-bg: rgba(14,23,25,0.78); color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 110px; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--f-text); font-size: 16px; line-height: 1.7; letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  overflow-x: hidden; word-break: keep-all;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 300; background: var(--bg); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; border-radius: 6px; }
+.num { font-variant-numeric: tabular-nums; }
+
+.wrap {
+  max-width: var(--wrap); margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 720px) { .wrap { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); } }
+
+/* ── 상단바 ── */
+header.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 200;
+  background: var(--nav-bg);
+  -webkit-backdrop-filter: saturate(170%) blur(20px); backdrop-filter: saturate(170%) blur(20px);
+  border-bottom: 1px solid var(--rule);
+}
+.nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; min-height: 54px; }
+.logo { display: flex; align-items: center; gap: 0.55rem; text-decoration: none; font-weight: 700; font-size: 0.98rem; letter-spacing: -0.02em; white-space: nowrap; }
+.logo svg { width: 20px; height: 20px; flex-shrink: 0; }
+.nav-links { display: flex; gap: 1.7rem; list-style: none; margin: 0; padding: 0; }
+.nav-links a { text-decoration: none; font-size: 0.86rem; font-weight: 500; color: var(--body); white-space: nowrap; transition: color .15s; }
+.nav-links a:hover { color: var(--accent); }
+@media (max-width: 900px) {
+  .nav-inner { flex-direction: column; align-items: stretch; gap: 0; padding-block: 0.5rem 0; }
+  .logo { padding-block: 0.25rem; }
+  .nav-links { overflow-x: auto; gap: 1.2rem; padding-block: 0.45rem 0.6rem; scrollbar-width: none; }
+  .nav-links::-webkit-scrollbar { display: none; }
+}
+
+/* ── 히어로 ── */
+.hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--rule); }
+.hero .net { position: absolute; inset: 0; pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 82%); mask-image: linear-gradient(180deg, #000 55%, transparent 82%); }
+.hero canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse 46% 52% at 50% 42%, transparent 0%, transparent 35%, #000 85%);
+          mask-image: radial-gradient(ellipse 46% 52% at 50% 42%, transparent 0%, transparent 35%, #000 85%);
+}
+.hero-inner { position: relative; text-align: center; padding-block: clamp(5rem, 12vw, 9rem) clamp(3.5rem, 7vw, 5.5rem); display: flex; flex-direction: column; align-items: center; }
+.pill {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  padding: 0.35rem 0.95rem; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--rule);
+  font-size: 0.8rem; font-weight: 500; color: var(--body);
+}
+.pill .live { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-2); box-shadow: 0 0 0 4px var(--accent-soft); }
+.pill .sep { width: 1px; height: 12px; background: var(--rule); }
+.wordmark {
+  margin: 1.6rem 0 0;
+  font-weight: 800; font-size: clamp(2.5rem, 9vw, 6.6rem);
+  line-height: 1.04; letter-spacing: -0.055em;
+  background: linear-gradient(180deg, var(--ink) 30%, var(--accent) 120%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-wrap: balance;
+}
+.tagline { margin: 1.3rem 0 0; font-size: clamp(1.05rem, 2vw, 1.35rem); font-weight: 500; color: var(--body); letter-spacing: -0.02em; max-width: 30em; text-wrap: balance; }
+.hero-cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-top: 2.2rem; }
+.btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.68rem 1.35rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; text-decoration: none; border: 1px solid transparent; transition: background .15s, color .15s, border-color .15s; cursor: pointer; font-family: inherit; letter-spacing: -0.01em; }
+.btn.fill { background: var(--ink); color: var(--bg); }
+.btn.fill:hover { background: var(--accent); }
+.btn.line { background: transparent; color: var(--ink); border-color: var(--rule); }
+.btn.line:hover { border-color: var(--accent-2); color: var(--accent); }
+
+.roster { position: relative; list-style: none; margin: 0 auto; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--rule); }
+.roster li { padding: 1.4rem 1rem 1.8rem; text-align: center; }
+.roster li + li { border-left: 1px solid var(--rule); }
+.roster .r-name { font-weight: 700; font-size: 1.02rem; letter-spacing: -0.02em; }
+.roster .r-aff { font-size: 0.8rem; color: var(--muted); margin-top: 0.15rem; }
+@media (max-width: 720px) {
+  .roster { grid-template-columns: 1fr 1fr; }
+  .roster li:nth-child(3) { border-left: 0; }
+  .roster li:nth-child(n+3) { border-top: 1px solid var(--rule); }
+}
+
+/* ── 섹션 공통 ── */
+section.block { padding-block: 5rem; border-bottom: 1px solid var(--rule); }
+section.block.alt { background: var(--surface); }
+.eyebrow { font-size: 0.76rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-2); }
+.sec-head { display: grid; grid-template-columns: 240px 1fr; gap: 2rem; margin-bottom: 2.4rem; align-items: end; }
+.sec-head > * { min-width: 0; }
+.sec-head h2 { font-weight: 800; font-size: clamp(1.7rem, 3vw, 2.3rem); letter-spacing: -0.045em; line-height: 1.2; margin: 0.35rem 0 0; text-wrap: balance; }
+.sec-head p { margin: 0; color: var(--body); max-width: 40em; }
+@media (max-width: 760px) { .sec-head { grid-template-columns: 1fr; gap: 0.8rem; } }
+
+/* ── 소개 ── */
+.pillars { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--ink); }
+.pillar { padding: 1.4rem 1.4rem 1.6rem 0; border-right: 1px solid var(--rule); min-width: 0; }
+.pillar + .pillar { padding-left: 1.4rem; }
+.pillar:last-child { border-right: 0; }
+.pillar .p-en { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-2); }
+.pillar h3 { font-size: 1.25rem; font-weight: 700; margin: 0.4rem 0 0.6rem; letter-spacing: -0.03em; }
+.pillar p { margin: 0; font-size: 0.93rem; color: var(--body); }
+.pillar a { display: inline-block; margin-top: 0.9rem; font-size: 0.84rem; font-weight: 600; color: var(--accent); text-decoration: none; }
+.pillar a:hover { text-decoration: underline; }
+@media (max-width: 900px) {
+  .pillars { grid-template-columns: 1fr 1fr; }
+  .pillar, .pillar + .pillar { padding: 1.3rem 1.2rem 1.4rem 0; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .pillar:nth-child(even) { padding-left: 1.2rem; border-left: 1px solid var(--rule); }
+}
+@media (max-width: 520px) {
+  .pillars { grid-template-columns: 1fr; }
+  .pillar:nth-child(even) { padding-left: 0; border-left: 0; }
+}
+.why { display: grid; grid-template-columns: 240px 1fr; gap: 2rem; margin-top: 3.2rem; }
+.why > * { min-width: 0; }
+.why h3 { font-size: 1.1rem; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+.why p { margin: 0 0 1rem; color: var(--body); max-width: 40em; }
+@media (max-width: 760px) { .why { grid-template-columns: 1fr; gap: 0.6rem; } }
+
+/* ── 구성원 ── */
+.members { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.member { background: var(--bg); border: 1px solid var(--rule); border-radius: var(--r); padding: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
+.avatar { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 1.1rem; color: var(--accent); background: var(--accent-soft); overflow: hidden; }
+.avatar.clin { color: var(--warm); background: var(--warm-soft); }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.m-name { font-weight: 800; font-size: 1.3rem; letter-spacing: -0.035em; line-height: 1.2; }
+.m-en { font-size: 0.8rem; color: var(--muted); margin-top: 0.15rem; }
+.m-aff { font-size: 0.9rem; color: var(--body); line-height: 1.55; border-top: 1px solid var(--rule); padding-top: 0.8rem; }
+.m-tag { align-self: flex-start; font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.m-tag.clin { background: var(--warm-soft); color: var(--warm); }
+.members-note { margin-top: 1rem; font-size: 0.8rem; color: var(--muted); }
+@media (max-width: 960px) { .members { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .members { grid-template-columns: 1fr; } }
+
+/* ── 공부모임 ── */
+.text-card { display: grid; grid-template-columns: 150px 1fr; gap: 1.8rem; align-items: start; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 1.6rem; margin-bottom: 2.4rem; }
+.text-card > * { min-width: 0; }
+.spine { aspect-ratio: 2 / 3; max-width: 100%; border-radius: 4px 8px 8px 4px; background: linear-gradient(90deg, var(--accent) 0 10%, var(--accent-2) 10% 100%); color: var(--bg); padding: 1rem 0.8rem 0.8rem 1.3rem; display: flex; flex-direction: column; justify-content: space-between; }
+.spine b { font-size: 0.95rem; line-height: 1.25; font-weight: 800; letter-spacing: -0.02em; }
+.spine small { font-size: 0.68rem; opacity: .85; }
+.text-card .label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-2); }
+.text-card h3 { font-size: 1.35rem; font-weight: 700; margin: 0.35rem 0 0.7rem; letter-spacing: -0.03em; line-height: 1.3; }
+.cite { font-size: 0.92rem; color: var(--body); padding-left: 1.6em; text-indent: -1.6em; margin: 0; }
+.text-card .note { margin: 1rem 0 0; font-size: 0.9rem; color: var(--body); }
+@media (max-width: 600px) { .text-card { grid-template-columns: 1fr; } .spine { width: 120px; } }
+
+.log-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem; margin-bottom: 0.8rem; }
+.log-head h3 { font-size: 1.15rem; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+.log-head span { font-size: 0.82rem; color: var(--muted); }
+.table-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--r); background: var(--surface); }
+table.log { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 0.9rem; }
+table.log th { text-align: left; font-weight: 600; font-size: 0.78rem; color: var(--muted); padding: 0.75rem 1rem; border-bottom: 1px solid var(--rule); background: var(--tint); }
+table.log td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--rule); vertical-align: top; color: var(--body); }
+table.log tr:last-child td { border-bottom: 0; }
+table.log td.no, table.log td.date { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); white-space: nowrap; }
+table.log tr.example td { color: var(--muted); }
+table.log tr.upcoming td { background: var(--warm-soft); }
+table.log a.go { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+table.log a.go:hover { text-decoration: underline; }
+table.log a.ttl { color: var(--ink); font-weight: 600; text-decoration: none; }
+table.log a.ttl:hover { color: var(--accent); }
+table.log .desc { display: block; font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; line-height: 1.5; }
+.inf { display: inline-block; font-size: 0.66rem; font-weight: 600; color: var(--warm); border: 1px dashed var(--warm); border-radius: 4px; padding: 0 0.35rem; margin-left: 0.3rem; vertical-align: 1px; white-space: nowrap; }
+.soon { display: inline-block; font-size: 0.68rem; font-weight: 700; color: var(--warm); background: var(--surface); border: 1px solid var(--warm); border-radius: 999px; padding: 0 0.5rem; margin-left: 0.4rem; vertical-align: 1px; }
+.log-note { font-size: 0.8rem; color: var(--muted); margin: 0.7rem 0 0; }
+.pub-mats { margin-top: 2.2rem; border-top: 1px solid var(--ink); padding-top: 1.2rem; }
+.pub-mats h3 { font-size: 1.05rem; font-weight: 700; margin: 0 0 0.6rem; }
+.pub-mats ul { list-style: none; margin: 0; padding: 0; }
+.pub-mats li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.3rem 1rem; padding: 0.65rem 0; border-bottom: 1px solid var(--rule); font-size: 0.92rem; }
+.pub-mats li a { color: var(--body); text-decoration: none; min-width: 0; }
+.pub-mats li a:hover { color: var(--accent); }
+.pub-mats li a b { color: var(--accent); font-weight: 600; margin-right: 0.5rem; font-size: 0.8rem; }
+.pub-mats li span { color: var(--muted); font-size: 0.8rem; }
+.pub-mats p { font-size: 0.8rem; color: var(--muted); margin: 0.7rem 0 0; }
+.ex-badge { display: inline-block; font-size: 0.68rem; font-weight: 600; padding: 0.05rem 0.45rem; border-radius: 4px; border: 1px dashed var(--warm); color: var(--warm); margin-left: 0.4rem; vertical-align: 1px; }
+
+/* ── 번역·저서 ── */
+.projects { display: grid; }
+.project { display: grid; grid-template-columns: 240px 1fr; gap: 2rem; padding: 1.8rem 0; border-top: 1px solid var(--rule); }
+.project:first-child { border-top: 1px solid var(--ink); }
+.project > * { min-width: 0; }
+.pj-kind { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-2); }
+.pj-status { display: inline-block; margin-top: 0.6rem; font-size: 0.78rem; font-weight: 600; padding: 0.2rem 0.7rem; border-radius: 999px; background: var(--warm-soft); color: var(--warm); }
+.project h3 { font-size: 1.35rem; font-weight: 700; margin: 0 0 0.3rem; letter-spacing: -0.03em; line-height: 1.35; }
+.project .orig { font-size: 0.88rem; color: var(--muted); margin: 0 0 0.9rem; }
+.project p.desc { margin: 0 0 1.3rem; color: var(--body); max-width: 40em; }
+.stages { display: grid; grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); list-style: none; margin: 0; padding: 0; counter-reset: st; }
+.stages li { counter-increment: st; position: relative; padding-top: 1.5rem; font-size: 0.8rem; color: var(--muted); }
+.stages li::before { content: ""; position: absolute; top: 5px; left: 0; right: 0; height: 2px; background: var(--rule); }
+.stages li::after { content: counter(st); position: absolute; top: -2px; left: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 2px solid var(--rule); font-size: 0.6rem; font-weight: 700; line-height: 12px; text-align: center; color: var(--muted); }
+.stages li.done::before, .stages li.now::before { background: var(--accent-2); }
+.stages li.done::after { background: var(--accent-2); border-color: var(--accent-2); color: var(--bg); }
+.stages li.now { color: var(--ink); font-weight: 700; }
+.stages li.now::after { border-color: var(--warm); color: var(--warm); background: var(--surface); }
+@media (max-width: 760px) { .project { grid-template-columns: 1fr; gap: 0.8rem; } }
+@media (max-width: 480px) { .stages li { font-size: 0.7rem; } }
+
+.chapters { list-style: none; margin: 0 0 1.4rem; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chapters li { font-size: 0.8rem; color: var(--muted); border: 1px dashed var(--rule); border-radius: 999px; padding: 0.25rem 0.75rem; }
+.chapters li.done { border: 1px solid var(--accent-soft); background: var(--accent-soft); color: var(--accent); }
+.chapters li b { font-weight: 700; margin-right: 0.35rem; }
+
+/* ── 학술활동 ── */
+.empty { border: 1px dashed var(--rule); border-radius: var(--r); padding: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; background: var(--bg); }
+.empty > * { min-width: 0; }
+.empty h3 { font-size: 1.2rem; font-weight: 700; margin: 0 0 0.5rem; letter-spacing: -0.03em; }
+.empty p { margin: 0; color: var(--body); font-size: 0.94rem; }
+.plan-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.plan-list li { display: flex; gap: 0.8rem; align-items: baseline; padding: 0.6rem 0; border-bottom: 1px solid var(--rule); font-size: 0.92rem; color: var(--body); }
+.plan-list li:last-child { border-bottom: 0; }
+.plan-list li b { font-weight: 600; font-size: 0.72rem; color: var(--accent-2); min-width: 6.8em; letter-spacing: 0.1em; text-transform: uppercase; }
+@media (max-width: 760px) { .empty { grid-template-columns: 1fr; padding: 1.4rem; } }
+
+/* ── 소식 ── */
+.news { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.news li { display: grid; grid-template-columns: 140px 1fr; gap: 1.5rem; padding: 1rem 0; border-bottom: 1px solid var(--rule); }
+.news li > * { min-width: 0; }
+.news .d { font-size: 0.88rem; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+.news .t { color: var(--body); }
+@media (max-width: 520px) { .news li { grid-template-columns: 1fr; gap: 0.2rem; } }
+
+/* ── 함께하기 ── */
+.join { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2.5rem; align-items: start; }
+.join > * { min-width: 0; }
+.join p { margin: 0 0 1rem; color: var(--body); max-width: 36em; }
+.contact-card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); padding: 1.5rem; display: grid; gap: 0.9rem; }
+.c-row { display: grid; grid-template-columns: 70px 1fr; gap: 1rem; align-items: center; font-size: 0.92rem; }
+.c-row > * { min-width: 0; }
+.c-row .lbl { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.c-row .val { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; overflow-wrap: anywhere; }
+.copy { font-size: 0.76rem; padding: 0.25rem 0.75rem; }
+@media (max-width: 760px) { .join { grid-template-columns: 1fr; } }
+
+/* ── 푸터 ── */
+footer { padding-block: 2.4rem 3rem; color: var(--muted); font-size: 0.82rem; }
+.f-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; align-items: center; }
+.f-inner .logo { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap nav-inner">
+    <a class="logo" href="#top">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.4" fill="var(--accent)"/><circle cx="4" cy="6" r="2" fill="none" stroke="var(--accent-2)" stroke-width="1.6"/><circle cx="20" cy="6" r="2" fill="none" stroke="var(--accent-2)" stroke-width="1.6"/><circle cx="4" cy="18" r="2" fill="none" stroke="var(--warm)" stroke-width="1.6"/><circle cx="20" cy="18" r="2" fill="none" stroke="var(--accent-2)" stroke-width="1.6"/><path d="M5.6 7.2 9.6 10.4M18.4 7.2l-4 3.2M5.6 16.8l4-3.2M18.4 16.8l-4-3.2" stroke="var(--accent-2)" stroke-width="1.2"/></svg>
+      신경사회사업연구회
+    </a>
+    <nav aria-label="주요 메뉴">
+      <ul class="nav-links">
+        <li><a href="#about">소개</a></li>
+        <li><a href="#members">구성원</a></li>
+        <li><a href="#study">공부모임</a></li>
+        <li><a href="#books">번역·저서</a></li>
+        <li><a href="#scholarship">학술활동</a></li>
+        <li><a href="#news">소식</a></li>
+        <li><a href="#join">함께하기</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- 히어로 -->
+  <section class="hero">
+    <div class="net" aria-hidden="true"><canvas id="neural"></canvas></div>
+    <div class="wrap hero-inner">
+      <span class="pill"><span class="live"></span>Neuro-Social Work Study Group<span class="sep"></span><span class="num">Since 2026.07.24</span></span>
+      <h1 class="wordmark">신경사회사업연구회</h1>
+      <p class="tagline">신경과학과 사회복지 실천 사이를 함께 읽고, 함께 씁니다.</p>
+      <div class="hero-cta">
+        <a class="btn fill" href="#study">공부모임 보기</a>
+        <a class="btn line" href="#books">번역·저서 작업</a>
+      </div>
+    </div>
+    <div class="wrap">
+      <ul class="roster" id="roster"></ul>
+    </div>
+  </section>
+
+  <!-- 소개 -->
+  <section class="block" id="about">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="eyebrow">About</div><h2>연구회 소개</h2></div>
+        <p>2026년 7월 24일 네 사람이 모여 시작했습니다. 일요일 밤 온라인 공부모임을 바탕에 두고, 그 결과를 번역서와 저서, 학술 활동으로 정리해 나갑니다.</p>
+      </div>
+
+      <div class="pillars">
+        <div class="pillar">
+          <div class="p-en">Study</div>
+          <h3>공부모임</h3>
+          <p>정해진 범위를 나누어 읽고 발제하며, 개념을 사회복지 실천의 장면에 비추어 토론합니다.</p>
+          <a href="#study">기록 보기 →</a>
+        </div>
+        <div class="pillar">
+          <div class="p-en">Translation</div>
+          <h3>번역서 작업</h3>
+          <p>공부의 중심 교재인 <i>Neurobiology for Clinical Social Work</i>의 국역 작업을 진행합니다.</p>
+          <a href="#books">진행 상황 →</a>
+        </div>
+        <div class="pillar">
+          <div class="p-en">Authorship</div>
+          <h3>저서 작업</h3>
+          <p>국내 사회복지 현장의 맥락에서 신경사회사업을 풀어 쓴 저서를 기획합니다.</p>
+          <a href="#books">기획 보기 →</a>
+        </div>
+        <div class="pillar">
+          <div class="p-en">Scholarship</div>
+          <h3>학술 활동</h3>
+          <p>학술대회 발표와 공동 연구, 세미나를 통해 연구회의 공부를 학계와 현장에 나눕니다.</p>
+          <a href="#scholarship">활동 보기 →</a>
+        </div>
+      </div>
+
+      <div class="why">
+        <h3>왜 신경사회사업인가</h3>
+        <div>
+          <p>트라우마, 애착, 정서조절은 사회복지 실천이 오래 다뤄 온 주제이고, 이 주제들은 점점 더 신경생물학적 이해와 맞닿아 있습니다. 그 지식을 현장의 언어로 옮기는 일은 연구자 혼자서도, 실천가 혼자서도 하기 어렵습니다.</p>
+          <p>그래서 우리는 대학의 연구자, 병원의 정신건강사회복지사, 의과대학의 연구원이 한 테이블에 앉아 같은 책을 읽는 데서 시작했습니다. 대인관계신경생물학(IPNB)에 대한 관심을 사회복지의 언어로 함께 이야기할 자리가 필요하다는 데 뜻이 모였습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 구성원 -->
+  <section class="block alt" id="members">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="eyebrow">Members</div><h2>구성원</h2></div>
+        <p>연구회는 대학과 임상 현장, 의과대학에 있는 네 명이 함께 꾸려 가고 있습니다.</p>
+      </div>
+      <div class="members" id="memberGrid"></div>
+      <div class="members-note">가나다순</div>
+    </div>
+  </section>
+
+  <!-- 공부모임 -->
+  <section class="block" id="study">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="eyebrow">Study Sessions</div><h2>공부모임</h2></div>
+        <p>한 권의 책을 끝까지 함께 읽는 것을 첫 목표로 삼고 있습니다. 회차마다 읽은 범위와 발제, 토론에서 남은 질문을 기록합니다.</p>
+      </div>
+
+      <div class="text-card">
+        <div class="spine" aria-hidden="true"><b>Neurobiology for Clinical Social Work</b><small>2nd ed. · Norton</small></div>
+        <div>
+          <div class="label">현재 교재</div>
+          <h3>Neurobiology for Clinical Social Work: Theory and Practice</h3>
+          <p class="cite">Shapiro, J. R., &amp; Applegate, J. S. (2018). <i>Neurobiology for clinical social work: Theory and practice</i> (2nd ed.). W. W. Norton.</p>
+          <p class="note">연구회 번역서 작업의 원서이기도 합니다. 읽으며 정리한 용어와 질문은 번역 작업에 그대로 이어집니다.</p>
+        </div>
+      </div>
+
+      <div class="log-head">
+        <h3>모임 기록</h3>
+        <span id="sessionCount"></span>
+      </div>
+      <div class="table-scroll">
+        <table class="log">
+          <thead><tr><th>회차</th><th>날짜</th><th>범위</th><th>발제</th><th>정리</th></tr></thead>
+          <tbody id="sessionBody"></tbody>
+        </table>
+      </div>
+      <p class="log-note">범위와 발제 중 <span class="inf">추정</span> 표시는 모임 대화 기록으로 미루어 정리한 항목입니다.</p>
+
+      <div class="pub-mats">
+        <h3>공개 자료</h3>
+        <ul>
+          <li><a href="materials/lecture-w05-ch4-attachment.pdf" target="_blank" rel="noopener"><b>강의교안</b> 리듬은 무엇으로 굳는가 (4장 애착)</a><span>PDF · 김준범</span></li>
+          <li><a href="materials/lecture-w06-ch5a-stress-ace.pdf" target="_blank" rel="noopener"><b>강의교안</b> 켜는 것은 쉽다, 끄는 것이 문제다 (5장 전반 스트레스·ACE)</a><span>PDF · 김준범</span></li>
+          <li><a href="materials/lecture-w07-ch5b-dyad-allostatic.pdf" target="_blank" rel="noopener"><b>강의교안</b> 몸이 더하는 것, 아이가 느끼는 것 (5장 후반)</a><span>PDF · 김준범</span></li>
+          <li><a href="https://bokjiman.github.io/airlab/journal/courtet-2016.html" target="_blank" rel="noopener"><b>리뷰</b> Courtet et al. (2016) 자살의 신경염증 모델</a><span>AIR Lab Journal Club</span></li>
+          <li><a href="https://bokjiman.github.io/airlab/journal/pollak-2026.html" target="_blank" rel="noopener"><b>리뷰</b> Pollak &amp; Smith (2026) 역경 연구의 개념적·방법론적 쟁점</a><span>AIR Lab Journal Club</span></li>
+        </ul>
+        <p>구성원끼리 나눈 번역 원고와 발제 자료는 공개하지 않습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 번역·저서 -->
+  <section class="block alt" id="books">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="eyebrow">Translation &amp; Books</div><h2>번역·저서</h2></div>
+        <p>공부모임에서 쌓은 이해를 책으로 정리합니다. 각 작업의 현재 단계를 여기에 표시합니다.</p>
+      </div>
+      <div class="projects" id="projectList"></div>
+    </div>
+  </section>
+
+  <!-- 학술활동 -->
+  <section class="block" id="scholarship">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="eyebrow">Scholarship</div><h2>학술활동</h2></div>
+        <p>학술대회 발표, 공동 연구, 세미나와 워크숍 기록을 모아 둡니다.</p>
+      </div>
+      <div id="scholarshipBox"></div>
+    </div>
+  </section>
+
+  <!-- 소식 -->
+  <section class="block alt" id="news">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="eyebrow">News</div><h2>소식</h2></div>
+        <p>연구회의 새 소식을 최신순으로 정리합니다.</p>
+      </div>
+      <ul class="news" id="newsList"></ul>
+    </div>
+  </section>
+
+  <!-- 함께하기 -->
+  <section class="block" id="join">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="eyebrow">Contact</div><h2>함께하기</h2></div>
+        <p>신경과학과 사회복지 실천이 만나는 지점에 관심이 있다면 연락 주세요.</p>
+      </div>
+      <div class="join">
+        <div>
+          <p>공부모임 참여, 공동 연구, 세미나나 특강 요청 등 연구회와 관련한 문의는 아래 연락처로 보내 주시면 구성원들과 함께 검토해 답장드리겠습니다.</p>
+        </div>
+        <div class="contact-card">
+          <div class="c-row"><span class="lbl">Email</span><span class="val"><span id="mail">jayb.kim@cbnu.ac.kr</span><button class="btn line copy" id="copyMail" type="button">복사</button></span></div>
+          <div class="c-row"><span class="lbl">담당</span><span class="val">김준범 (충북대학교 아동복지학과)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap f-inner">
+    <a class="logo" href="#top">신경사회사업연구회</a>
+    <span>Neuro-Social Work Study Group · Since 2026.07.24</span>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   내용 수정은 아래 데이터 배열만 고치면 됩니다.
+   ============================================================ */
+
+/* 구성원 (가나다순). kind: "academic" = 대학·연구기관, "clinical" = 임상 현장
+   short: 첫 화면 구성원 줄에 나오는 짧은 소속
+   photo에 "images/파일명.jpg"를 넣으면 이니셜 대신 사진이 나옵니다. */
+const MEMBERS = [
+  { ko: "김준범", en: "Kim, Joonbeom", aff: "충북대학교 아동복지학과 조교수", short: "충북대학교", kind: "academic", tag: "대학", photo: "" },
+  { ko: "김태호", en: "Kim, Taeho",    aff: "계명대학교 동산병원 정신건강의학과 정신건강사회복지사", short: "계명대학교 동산병원", kind: "clinical", tag: "임상 현장", photo: "" },
+  { ko: "김혜교", en: "Kim, Hyekyo",   aff: "경희대학교 의과대학 정신건강의학교실 연구원", short: "경희대학교 의과대학", kind: "academic", tag: "의과대학", photo: "" },
+  { ko: "전진호", en: "Jeon, Jinho",   aff: "초당대학교 교수", short: "초당대학교", kind: "academic", tag: "대학", photo: "" },
+];
+
+/* 공부모임 기록 (최신순). href: 정리 페이지, inf: ["range","presenter"] 중 추정 항목, upcoming: 예정 모임 */
+const SESSIONS = [
+  { no: 7, date: "2026.11.15", range: "5장 후반: 다이애드·알로스타틱 부하", presenter: "김준범", href: "study/s07.html", desc: "", upcoming: true },
+  { no: 6, date: "2026.10.25", range: "5장 전반: 스트레스와 아동기 역경", presenter: "김준범", href: "study/s06.html", desc: "" },
+  { no: 5, date: "2026.10.11", range: "4장 애착 관계의 역할", presenter: "김혜교", href: "study/s05.html", desc: "" },
+  { no: 4, date: "2026.09.13", range: "3장 정동과 정동조절", presenter: "김태호", href: "study/s04.html", desc: "" },
+  { no: 3, date: "2026.08.30", range: "2장 학습과 기억의 신경과학", presenter: "전진호", href: "study/s03.html", desc: "", inf: ["presenter"] },
+  { no: 2, date: "2026.08.16", range: "서문·1장 사회복지와 신경과학", presenter: "김준범", href: "study/s02.html", desc: "", inf: ["range", "presenter"] },
+  { no: 1, date: "2026.08.02", range: "첫 모임: 진행 방식 논의와 Courtet et al. (2016) 리뷰", presenter: "김준범", href: "study/s01.html", desc: "" },
+];
+
+/* 번역·저서. stage는 stages 배열의 현재 단계 번호(0부터). */
+const PROJECTS = [
+  {
+    kind: "Translation", status: "번역 진행 중",
+    title: "Neurobiology for Clinical Social Work 국역",
+    orig: "원서: Shapiro, J. R., & Applegate, J. S. (2018). Neurobiology for clinical social work: Theory and practice (2nd ed.). W. W. Norton.",
+    desc: "공부모임의 교재를 국내 사회복지 연구자와 실천가가 읽을 수 있도록 우리말로 옮기고 있습니다. 장을 나누어 초벌 번역을 하고, 모임에서 읽으며 용어를 다듬습니다.",
+    chapters: [
+      { ch: "서문·1장", who: "김준범", done: true },
+      { ch: "2장", who: "전진호", done: true },
+      { ch: "3장", who: "김태호", done: true },
+      { ch: "4장", who: "김혜교", done: true },
+      { ch: "5~10장", who: "", done: false },
+    ],
+    stages: ["장별 초벌 번역", "상호 검토", "출판 준비", "편집·교정", "출간"], stage: 0
+  },
+  {
+    kind: "Authorship", status: "기획 중",
+    title: "신경사회사업 저서 (가제)",
+    orig: "",
+    desc: "번역과 공부모임에서 얻은 이해를 바탕으로, 국내 현장의 사례와 맥락을 담은 저서를 기획하고 있습니다.",
+    stages: ["주제·목차 기획", "집필", "상호 검토", "편집·교정", "출간"], stage: 0
+  },
+];
+
+/* 학술활동. 비어 있으면 '준비 중' 안내가 나옵니다.
+   예: { date: "2027.05", type: "학술대회 발표", title: "발표 제목", venue: "학회명" } */
+const SCHOLARSHIP = [];
+
+/* 소식 (최신순) */
+const NEWS = [
+  { date: "2026.11.15", text: "7회 모임(5장 후반)은 11월 15일로 미루어 진행합니다." },
+  { date: "2026.11", text: "신경사회사업연구회 홈페이지를 열고, 1회부터 6회까지의 모임 정리를 올렸습니다." },
+  { date: "2026.10.25", text: "6회 모임: 5장 전반, 스트레스와 아동기 역경(ACE)을 함께 읽었습니다." },
+  { date: "2026.10.11", text: "5회 모임: 4장 애착 관계의 역할을 함께 읽었습니다." },
+  { date: "2026.09.13", text: "4회 모임: 3장 정동과 정동조절을 함께 읽었습니다." },
+  { date: "2026.08.02", text: "첫 공부모임을 열었습니다." },
+  { date: "2026.07.24", text: "네 사람이 모여 신경사회사업 스터디를 시작했습니다." },
+]
+
+/* ============================================================ */
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+document.getElementById("roster").innerHTML = MEMBERS.map(m =>
+  `<li><div class="r-name">${esc(m.ko)}</div><div class="r-aff">${esc(m.short)}</div></li>`).join("");
+
+document.getElementById("memberGrid").innerHTML = MEMBERS.map(m => {
+  const clin = m.kind === "clinical" ? " clin" : "";
+  const av = m.photo ? `<img src="${esc(m.photo)}" alt="">` : esc(m.ko.slice(1, 2) || m.ko[0]);
+  return `<article class="member">
+    <div class="avatar${clin}">${av}</div>
+    <div><div class="m-name">${esc(m.ko)}</div><div class="m-en">${esc(m.en)}</div></div>
+    <div class="m-aff">${esc(m.aff)}</div>
+    <span class="m-tag${clin}">${esc(m.tag)}</span>
+  </article>`;
+}).join("");
+
+const held = SESSIONS.filter(x => !x.upcoming).length;
+const next = SESSIONS.find(x => x.upcoming);
+document.getElementById("sessionCount").textContent = `지금까지 ${held}회` + (next ? ` · 다음 모임 ${next.date}` : "");
+const inf = (x, k) => (x.inf || []).includes(k) ? '<span class="inf">추정</span>' : "";
+document.getElementById("sessionBody").innerHTML = SESSIONS.map(x => `<tr class="${x.upcoming ? "upcoming" : ""}">
+  <td class="no">${String(x.no).padStart(2, "0")}</td>
+  <td class="date">${esc(x.date)}${x.upcoming ? '<span class="soon">예정</span>' : ""}</td>
+  <td><a class="ttl" href="${esc(x.href)}">${esc(x.range)}</a>${inf(x, "range")}${x.desc ? `<span class="desc">${esc(x.desc)}</span>` : ""}</td>
+  <td>${esc(x.presenter)}${inf(x, "presenter")}</td>
+  <td><a class="go" href="${esc(x.href)}">${x.upcoming ? "미리 보기" : "정리 보기"} →</a></td>
+</tr>`).join("");
+
+document.getElementById("projectList").innerHTML = PROJECTS.map(p => `<article class="project">
+  <div><div class="pj-kind">${esc(p.kind)}</div><span class="pj-status">${esc(p.status)}</span></div>
+  <div>
+    <h3>${esc(p.title)}</h3>
+    ${p.orig ? `<p class="orig">${esc(p.orig)}</p>` : ""}
+    <p class="desc">${esc(p.desc)}</p>
+    ${p.chapters ? `<ul class="chapters">${p.chapters.map(c => `<li class="${c.done ? "done" : ""}"><b>${esc(c.ch)}</b>${c.who ? esc(c.who) : "예정"}</li>`).join("")}</ul>` : ""}
+    <ol class="stages" style="--n:${p.stages.length}" aria-label="진행 단계">
+      ${p.stages.map((st, i) => `<li class="${i < p.stage ? "done" : i === p.stage ? "now" : ""}"${i === p.stage ? ' aria-current="step"' : ""}>${esc(st)}</li>`).join("")}
+    </ol>
+  </div>
+</article>`).join("");
+
+document.getElementById("scholarshipBox").innerHTML = SCHOLARSHIP.length
+  ? `<ul class="news">${SCHOLARSHIP.map(a => `<li><span class="d">${esc(a.date)}</span><span class="t"><b>${esc(a.type)}</b> · ${esc(a.title)}${a.venue ? `, ${esc(a.venue)}` : ""}</span></li>`).join("")}</ul>`
+  : `<div class="empty">
+      <div><h3>첫 학술 활동을 준비하고 있습니다</h3><p>발표나 논문, 세미나가 생기면 이곳에 날짜순으로 정리됩니다.</p></div>
+      <ul class="plan-list">
+        <li><b>Conference</b>학술대회 발표 및 기획 세션</li>
+        <li><b>Paper</b>신경사회사업 관련 공동 논문</li>
+        <li><b>Seminar</b>현장 실천가 대상 세미나 · 워크숍</li>
+      </ul>
+    </div>`;
+
+document.getElementById("newsList").innerHTML = NEWS.map(n => `<li><span class="d">${esc(n.date)}</span><span class="t">${esc(n.text)}</span></li>`).join("");
+
+document.getElementById("copyMail").addEventListener("click", e => {
+  const btn = e.currentTarget, el = document.getElementById("mail");
+  const done = () => { btn.textContent = "복사됨"; setTimeout(() => btn.textContent = "복사", 1600); };
+  const select = () => { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+  try { navigator.clipboard.writeText(el.textContent).then(done).catch(select); } catch (_) { select(); }
+});
+
+/* 첫 화면 배경: 천천히 움직이는 신경망 */
+(function () {
+  const cv = document.getElementById("neural");
+  const ctx = cv.getContext("2d");
+  const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W = 0, H = 0, pts = [], color = "61,140,131", raf;
+
+  function readColor() {
+    const c = getComputedStyle(document.documentElement).getPropertyValue("--accent-2").trim();
+    const m = c.match(/^#?([0-9a-f]{6})$/i);
+    if (m) { const n = parseInt(m[1], 16); color = `${n >> 16},${(n >> 8) & 255},${n & 255}`; }
+  }
+  function resize() {
+    const r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const count = Math.round(Math.min(90, Math.max(28, W * H / 14000)));
+    let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    pts = Array.from({ length: count }, () => ({ x: rnd() * W, y: rnd() * H, vx: (rnd() - .5) * .22, vy: (rnd() - .5) * .22, r: 1.2 + rnd() * 1.8 }));
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const L = 150;
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[i];
+      for (let j = i + 1; j < pts.length; j++) {
+        const b = pts[j], dx = a.x - b.x, dy = a.y - b.y, d = Math.hypot(dx, dy);
+        if (d < L) { ctx.strokeStyle = `rgba(${color},${(1 - d / L) * .35})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+      }
+    }
+    for (const p of pts) { ctx.fillStyle = `rgba(${color},.55)`; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); }
+  }
+  function step() {
+    for (const p of pts) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < -20) p.x = W + 20; if (p.x > W + 20) p.x = -20;
+      if (p.y < -20) p.y = H + 20; if (p.y > H + 20) p.y = -20;
+    }
+    draw(); raf = requestAnimationFrame(step);
+  }
+  readColor(); resize(); draw();
+  if (!still) raf = requestAnimationFrame(step);
+  window.addEventListener("resize", () => { resize(); draw(); });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { readColor(); draw(); });
+  new MutationObserver(() => { readColor(); draw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+})();
+</script>
+</body>
+</html>
