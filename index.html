@@ -280,6 +280,12 @@ table.log .desc { display: block; font-size: 0.82rem; color: var(--muted); margi
 footer { padding-block: 2.4rem 3rem; color: var(--muted); font-size: 0.82rem; }
 .f-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; align-items: center; }
 .f-inner .logo { color: var(--ink); }
+.f-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.7rem; }
+.visitors { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem 1.1rem; }
+.vc { display: flex; align-items: center; gap: 0.5rem; }
+.vc-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.vc img { height: 18px; display: block; border-radius: 3px; }
+@media (max-width: 520px) { .f-right { align-items: flex-start; } .visitors { justify-content: flex-start; } }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
@@ -480,7 +486,13 @@ footer { padding-block: 2.4rem 3rem; color: var(--muted); font-size: 0.82rem; }
 <footer>
   <div class="wrap f-inner">
     <a class="logo" href="#top">신경사회사업연구회</a>
-    <span>Neuro-Social Work Study Group · Since 2026.07.24</span>
+    <div class="f-right">
+      <span>Neuro-Social Work Study Group · Since 2026.07.24</span>
+      <div class="visitors" aria-label="방문자 수">
+        <div class="vc"><span class="vc-label">Today</span><img src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Fbokjiman.github.io%2Fneuro-socialwork&amp;label=&amp;color=%231c5c57&amp;style=flat-square" alt="오늘 방문자 수" loading="lazy"></div>
+        <div class="vc"><span class="vc-label">Total</span><img src="https://hits.sh/bokjiman.github.io/neuro-socialwork.svg?style=flat-square&amp;color=1c5c57&amp;labelColor=e9f0ee&amp;label=" alt="전체 방문자 수" loading="lazy"></div>
+      </div>
+    </div>
   </div>
 </footer>
 
